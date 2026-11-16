@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Day 3 notes on OCR, ROS 2, and YOLO object detection.">
   <title>Day 3 — Conveyor Belt</title>
   <link rel="stylesheet" href="../assets/site.css">
 </head>
@@ -12,10 +13,63 @@
     <span class="header-note">Research project · November 2026</span>
   </header>
   <main class="container page-main">
-    <a class="back-link" href="../index.html">← All project pages</a>
-    <div class="page-heading"><p class="eyebrow">Daily log · 03</p><h1>Day 3</h1><p class="intro">Project notes and material from Day 3.</p></div>
-    <iframe class="content-frame" src="../DRAFT/Day%203.html" title="Day 3 project content"></iframe>
-    <a class="original-link" href="../DRAFT/Day%203.html">Open the original Day 3 page</a>
+    <a class="back-link" href="../index.html">← Project home</a>
+    <header class="page-heading"><p class="eyebrow">Daily log · 03</p><h1>Day 3</h1><p class="intro">Notes on recognizing cube numbers, robotics middleware, and real-time object detection.</p></header>
+
+    <article class="article-content">
+      <h2>Optical Character Recognition (OCR) <a class="citation" href="sources.html">[3]</a></h2>
+      <p>OCR recognizes typed, handwritten, or printed text in images and converts it into machine-encoded text. The source may be a scanned document, a photograph, a scene image such as a sign, or video subtitles. OCR is a research area within pattern recognition, artificial intelligence, and computer vision.</p>
+      <p>Early systems had to be trained on each character and often worked with one font. Modern systems can handle many fonts accurately.</p>
+      <h3>Uses</h3>
+      <p>Common uses include data entry from invoices, passports, and receipts; number-plate and traffic-sign recognition; book scanning; searchable PDFs; and assistive tools for blind users.</p>
+      <h3>Types</h3>
+      <ul>
+        <li><strong>OCR:</strong> recognition of typewritten text, character by character.</li>
+        <li><strong>Intelligent character recognition (ICR):</strong> recognition of handwritten characters, usually using machine learning.</li>
+        <li><strong>Word-level recognition:</strong> applies the same idea to whole words, which can help with cursive writing.</li>
+      </ul>
+      <h3>How it works</h3>
+      <ol>
+        <li><strong>Pre-processing:</strong> deskew a tilted image, remove speckles, and binarize it to black and white. Binarization quality can strongly affect recognition.</li>
+        <li><strong>Layout and segmentation:</strong> find columns, lines, and words; separate touching characters or join broken ones.</li>
+        <li><strong>Normalization:</strong> adjust character aspect ratio and scale.</li>
+        <li><strong>Recognition:</strong> matrix matching compares pixels against stored glyphs; feature extraction identifies lines, loops, and intersections and compares them with prototypes.</li>
+        <li><strong>Post-processing:</strong> use dictionaries, word co-occurrence, or grammar to correct likely recognition errors.</li>
+      </ol>
+      <h3>Limits</h3>
+      <p>Even clear typewritten Latin text is not recognized perfectly. The notes cite a study of old newspapers in which commercial software achieved 81–99% accuracy per character. Handwriting, cursive, and scripts with many strokes remain challenging. Accuracy also depends on the measurement: a 1% character error rate can correspond to a substantially higher word error rate. Confidence thresholds can flag uncertain results for review.</p>
+      <h3>Applying OCR to the cube</h3>
+      <p>The notes suggest ACT may learn to pick up a cube even when it is in a different position, but may not identify the number printed on it. OCR could address number recognition by deskewing the image, carefully converting it to black and white, and restricting the recognized output to digits. Whether OCR needs to be a separate component or ACT alone is sufficient remains an open question in the notes.</p>
+
+      <h2>What is ROS 2?</h2>
+      <p>ROS 2 (Robot Operating System 2) is an open-source middleware framework used in robotics to let hardware and software components communicate with one another.</p>
+      <h3>Where it is used</h3>
+      <p>ROS 2 is used where multiple sensors, actuators, and decision-making algorithms need to work together, including commercial robotics, heavy industry, aerospace, and research.</p>
+
+      <h2>YOLO object detection <a class="citation" href="sources.html">[5]</a></h2>
+      <p>YOLO (“You Only Look Once”) treats object detection as a single regression problem rather than a multi-stage pipeline of region proposals and separate classifiers. Earlier approaches slid a classifier across an image or generated proposals and classified them one at a time. YOLO instead uses a neural network to predict bounding boxes and class probabilities together.</p>
+      <h3>How YOLO works</h3>
+      <ol>
+        <li>Resize the image to 448 × 448 pixels.</li>
+        <li>Run a single convolutional network.</li>
+        <li>Divide the image into an S × S grid. A cell is responsible for an object whose center falls within it.</li>
+        <li>Each grid cell predicts bounding boxes, confidence scores, and class probabilities.</li>
+        <li>Combine class likelihood with box confidence, then remove duplicate overlapping predictions.</li>
+      </ol>
+      <h3>Advantages</h3>
+      <ul>
+        <li><strong>Speed:</strong> the notes report 45 fps for base YOLO and 155 fps for Fast YOLO (25 ms latency).</li>
+        <li><strong>Global reasoning:</strong> the network sees the whole image, which can reduce background false positives.</li>
+        <li><strong>Generalization:</strong> the notes describe improved generalization compared with prior detectors.</li>
+        <li><strong>Simple, end-to-end design.</strong></li>
+      </ul>
+      <h3>Limitations</h3>
+      <ul>
+        <li>Spatial constraints can make small objects in groups difficult to detect.</li>
+        <li>Coarser features can lead to localization errors.</li>
+      </ul>
+    </article>
+    <nav class="article-pagination" aria-label="More project pages"><a href="day-2.html">← Day 2</a><a href="sources.html">Sources →</a></nav>
   </main>
   <footer class="site-footer"><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
 </body>

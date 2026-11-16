@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Day 1 notes on the Nero robotic arm, operating environment, safety, and ACT.">
   <title>Day 1 — Conveyor Belt</title>
   <link rel="stylesheet" href="../assets/site.css">
 </head>
@@ -12,10 +13,73 @@
     <span class="header-note">Research project · November 2026</span>
   </header>
   <main class="container page-main">
-    <a class="back-link" href="../index.html">← All project pages</a>
-    <div class="page-heading"><p class="eyebrow">Daily log · 01</p><h1>Day 1</h1><p class="intro">Project notes and material from Day 1.</p></div>
-    <iframe class="content-frame" src="../DRAFT/Day%201.html" title="Day 1 project content"></iframe>
-    <a class="original-link" href="../DRAFT/Day%201.html">Open the original Day 1 page</a>
+    <a class="back-link" href="../index.html">← Project home</a>
+    <header class="page-heading"><p class="eyebrow">Daily log · 01</p><h1>Day 1</h1><p class="intro">Understanding the working environment, Nero arm operation and safety, and Action Chunking with Transformers.</p></header>
+
+    <article class="article-content">
+      <h2>What is an environment?</h2>
+      <p>An environment is a complete workspace of software, tools, and rules that allows code to run properly. It keeps everything organized and predictable so code runs reliably without breaking on different computers.</p>
+      <ul>
+        <li><strong>Operating system (OS):</strong> the foundation code runs on, such as Windows, macOS, or Linux.</li>
+        <li><strong>Language and engine:</strong> the programming language and its interpreter or compiler, such as Python or C.</li>
+        <li><strong>External libraries:</strong> pre-written packages that give a program extra features.</li>
+        <li><strong>Settings and configuration:</strong> rules, paths, and credentials that tell code how to behave on a particular machine.</li>
+      </ul>
+
+      <h2>Nero robotic arm safety protocols <a class="citation" href="../pages/sources.html">[1]</a></h2>
+      <ul>
+        <li>The arm is not for anyone under 18; anyone under 18 must have adult supervision.</li>
+        <li>The arm has no obstacle avoidance or sensors. Use it in an open area and keep it in sight.</li>
+        <li>Stay within the stated operating conditions: −20 to 50 °C, 25–85% non-condensing humidity, and IP22 ingress protection.</li>
+        <li>The maximum payload is 3 kg.</li>
+        <li>If software reports an error, the arm moves unusually, or anyone enters its operating zone, press Emergency Stop.</li>
+      </ul>
+      <p class="notice"><strong>Safety:</strong> Follow the manufacturer's manual and have a trained supervisor present. Keep people and objects clear of the arm's workspace; do not rely on the arm to detect them.</p>
+
+      <h2>How the Nero arm works <a class="citation" href="../pages/sources.html">[1]</a></h2>
+      <ol>
+        <li>Select a control mode: Point, Line, or Circle movement; direct joint angles; or a saved trajectory.</li>
+        <li>For Point, Line, and Circle movements, specify a target position (x, y, z, and orientation). The controller calculates the joint angles needed to reach it.</li>
+        <li>If the target or any point along its path is unreachable, the arm does not move and displays an error.</li>
+        <li>Each joint motor moves to its commanded angle within its range and speed limits.</li>
+      </ol>
+
+      <h3>Features built on top of basic control</h3>
+      <ul>
+        <li><strong>Drag teaching:</strong> gravity compensation counteracts the arm's weight so a person can move it by hand while its path is recorded. The path can then be replayed.</li>
+        <li><strong>Leader–follower:</strong> one arm is moved by hand and a second arm copies its motion in real time.</li>
+        <li><strong>Zero point:</strong> each joint has a reference angle used to determine its position. It must be set in the upright pose for gravity compensation to work correctly.</li>
+        <li><strong>Protection:</strong> joint, speed, and acceleration limits and collision sensitivity (levels 0–8) can be configured. The arm stops if it encounters unexpected resistance.</li>
+      </ul>
+
+      <h2>Limitations and visual perception</h2>
+      <p>The arm has no built-in cameras or obstacle sensors, so by itself it only knows its joint positions. It is not aware of objects or people. Tasks involving objects, such as picking up a block, therefore need external perception, which can use fixed positions, additional sensors, or cameras.</p>
+      <p>In this setup, cameras provide visual input. The arm can learn to pick up a cube using ACT (Action Chunking with Transformers), an imitation-learning policy that maps camera observations to arm actions.</p>
+
+      <h2>What is ACT? <a class="citation" href="../pages/sources.html">[2]</a></h2>
+      <p>Action Chunking with Transformers (ACT) is a low-cost, reproducible learning method that predicts sequences of future actions rather than one action at a time.</p>
+      <h3>How it works</h3>
+      <ul>
+        <li><strong>Data collection:</strong> train from human demonstrations paired with robot joint data.</li>
+        <li><strong>Action chunking:</strong> predict a group, or “chunk,” of future actions at once to reduce small mistakes that accumulate over time.</li>
+        <li><strong>Temporal ensembling:</strong> querying only every k steps can make movement jerky when new observations arrive. Querying at every timestep creates overlapping predictions; a weighted average blends them into smoother motion. The notes give exponential weights as <code>wᵢ = exp(−m · i)</code>.</li>
+      </ul>
+      <h3>Challenges and approaches noted</h3>
+      <ul>
+        <li><strong>Jerky motion:</strong> blend overlapping predictions with temporal ensembling.</li>
+        <li><strong>Noisy human demonstrations:</strong> humans vary their movements when precision is not needed; training should prioritize accuracy at critical, high-precision moments.</li>
+        <li><strong>Unpredictable tasks:</strong> tasks such as unwrapping candy may need more data, pretraining, and better visual perception.</li>
+      </ul>
+      <p>The original notes include the heading “Application of ACT in daily life” but no text underneath it.</p>
+
+      <h2>Difficulties faced with the Nero arm</h2>
+      <ul>
+        <li><strong>Problem:</strong> the “One-Time Code” was accidentally run during initial setup. This reset the system environment and may have erased previous data.</li>
+        <li><strong>Impact:</strong> the Nero arm became unusable until Mr. Jon helped restore and reconfigure the system.</li>
+        <li><strong>Takeaway:</strong> run the One-Time Code only when the physical environment changes, such as when the arm's location or position changes.</li>
+      </ul>
+    </article>
+    <nav class="article-pagination" aria-label="More project pages"><a href="day-2.html">Next: Day 2 →</a></nav>
   </main>
   <footer class="site-footer"><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
 </body>

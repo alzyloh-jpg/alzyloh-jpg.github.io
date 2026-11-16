@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Day 2 notes on the dual-arm Nero workflow, ACT, and 3D modelling.">
   <title>Day 2 — Conveyor Belt</title>
   <link rel="stylesheet" href="../assets/site.css">
 </head>
@@ -12,10 +13,131 @@
     <span class="header-note">Research project · November 2026</span>
   </header>
   <main class="container page-main">
-    <a class="back-link" href="../index.html">← All project pages</a>
-    <div class="page-heading"><p class="eyebrow">Daily log · 02</p><h1>Day 2</h1><p class="intro">Project notes and material from Day 2.</p></div>
-    <iframe class="content-frame" src="../DRAFT/Day%202.html" title="Day 2 project content"></iframe>
-    <a class="original-link" href="../DRAFT/Day%202.html">Open the original Day 2 page</a>
+    <a class="back-link" href="../index.html">← Project home</a>
+    <header class="page-heading"><p class="eyebrow">Daily log · 02</p><h1>Day 2</h1><p class="intro">Dual-arm teleoperation and imitation-learning workflow, plus 3D modelling for block-picking experiments.</p></header>
+
+    <article class="article-content">
+      <h2>Full process for the VR dual Nero arms</h2>
+      <p>The notes describe two related workflows: a VR-driven dual-arm ACT pipeline, and a direct SO-101 leader-to-Nero follower setup. Keep the arm clear of people and use the manufacturer's safety procedures when testing any motion.</p>
+
+      <h3>Dual-arm visuomotor imitation-learning pipeline</h3>
+      <h4>1. Real-time bus topology and hardware abstraction</h4>
+      <p>The system uses two independent CAN 2.0B interfaces: <code>can0</code> for the right manipulator and <code>can1</code> for the left. The notes specify 1 Mbps. At a theoretical 128 bits per frame, the raw upper bound is about 7.8 thousand frames per second per bus before accounting for protocol efficiency and overhead.</p>
+      <pre><code>sudo ip link set can0 up type can bitrate 1000000
+sudo ip link set can1 up type can bitrate 1000000
+ip -br link show type can
+ros2 launch lerobot_agx_adapter nero_dual_bringup.launch.py</code></pre>
+      <p>Initializing the interfaces connects Linux SocketCAN to the physical transceivers. The ROS 2 hardware abstraction exposes joint positions and velocities for the two manipulators.</p>
+
+      <h4>2. Spatial calibration and zero point</h4>
+      <p>The workstation and Pico VR headset first establish a low-latency local network. Kinematic calibration then determines the mapping from joint positions to the end-effector pose for each arm. The notes describe each joint using a screw axis, a home configuration, and an encoder-offset vector; calibration writes offsets, transformations, and joint limits into <code>nero_dual.yaml</code>.</p>
+      <pre><code>hostname -I
+conda activate lerobot-dual-arm
+CFG=$HOME/Workspace/dual-arm/configs/profiles
+arm-teleoperate \
+  --config_path=$CFG/nero_dual.yaml \
+  --calibrate_write=true</code></pre>
+
+      <h4>3. VR teleoperation and demonstration capture</h4>
+      <p>The operator's two 6-DOF VR hand poses are mapped into robot task space using differential inverse kinematics. Three Intel RealSense RGB-D cameras capture multi-view observations at 30 Hz. The described dataset contains 20 “pick and place” demonstration episodes, pairing observations and joint states with target actions.</p>
+      <pre><code>conda activate lerobot-dual-arm
+export NERO=$HOME/Workspace/dual-arm
+export CFG=$NERO/configs/profiles/nero_dual.yaml
+export TASK=nero_task4NovTest3
+lerobot-record-vr \
+  --config_path=$CFG \
+  --robot.cameras="$CAMS" \
+  --dataset.root="$NERO/outputs/datasets/$TASK" \
+  --dataset.repo_id=local/$TASK \
+  --dataset.num_episodes=20 \
+  --dataset.single_task="pick and place" \
+  --dataset.push_to_hub=false \
+  --display_data=true</code></pre>
+
+      <h4>4. ACT policy training</h4>
+      <p>ACT predicts a sequence of actions conditioned on the current camera observations and joint state. The notes describe a conditional variational autoencoder: an encoder represents the demonstrated action sequence as a latent style variable, and a Transformer decoder reconstructs the actions. Training minimizes action error plus a weighted KL-divergence term.</p>
+      <pre><code>lerobot-train \
+  --dataset.repo_id=local/$TASK \
+  --dataset.root="$NERO/outputs/datasets/$TASK" \
+  --policy.type=act --policy.device=cuda \
+  --steps=60000 --batch_size=8 \
+  --output_dir="$NERO/outputs/models/$TASK" \
+  --job_name=act_$TASK \
+  --wandb.enable=false \
+  --policy.push_to_hub=false</code></pre>
+
+      <h4>5. Autonomous evaluation and temporal ensembling</h4>
+      <p>For evaluation, VR teleoperation is disabled and the policy runs closed-loop using camera input. The notes use a 50-action prediction horizon and exponential temporal ensembling to combine overlapping predictions, favoring newer visual feedback while smoothing motion.</p>
+      <pre><code>lerobot-record-vr \
+  --config_path=$CFG \
+  --teleop=null \
+  --policy.path="$NERO/outputs/models/$TASK/checkpoints/last/pretrained_model" \
+  --policy.n_action_steps=50 \
+  --robot.cameras="$CAMS" \
+  --dataset.root="$NERO/outputs/eval/eval_$TASK" \
+  --dataset.num_episodes=10 \
+  --dataset.single_task="evaluate pick and place" \
+  --dataset.push_to_hub=false \
+  --display_data=true</code></pre>
+
+      <h3>SO-101 leader and Nero follower workflow</h3>
+      <p>The following commands and mapping were included in the notes for a separate direct teleoperation setup. Confirm the correct hardware, ports, calibration, and emergency-stop procedure before use; test in dry-run first and do not assume these paths or device names match another machine.</p>
+      <h4>1. Environment setup</h4>
+      <pre><code>conda activate nov-smallarm-2026
+pip install feetech-servo-sdk python-can pyyaml rich pynput
+pip install "pyAgxArm @ git+https://github.com/agilexrobotics/pyAgxArm.git"
+cd ~/Desktop/NovSmallArm2026
+pip install -e src/lerobot_plugins/robot_agilex_nero --no-deps
+pip install -e src/lerobot_plugins/teleop_so101_leader --no-deps</code></pre>
+      <p>Purpose given in the notes: activate an isolated Python environment and install motor drivers and local plugins so edits in the workspace are picked up immediately.</p>
+      <h4>2. Terminal initialization</h4>
+      <pre><code>unset PYTHONPATH
+conda activate nov-smallarm-2026
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
+cd ~/Desktop/NovSmallArm2026</code></pre>
+      <p>This clears conflicting global Python paths and prioritizes the environment's shared libraries.</p>
+      <h4>3. Hardware ports and diagnostics</h4>
+      <pre><code>sudo ip link set can0 down
+sudo ip link set can0 type can bitrate 1000000
+sudo ip link set can0 up
+sudo chmod 666 /dev/ttyACM0
+
+python src/scripts/test_so101_reader.py --port /dev/ttyACM0
+python src/scripts/test_nero_can.py --channel can0 --firmware v120</code></pre>
+      <p>The notes use these tests to check each arm independently before linking them. Device permissions and interface configuration should be set only on the intended machine and hardware.</p>
+      <h4>4. Calibration and axis alignment</h4>
+      <pre><code>python src/scripts/calibrate_nero.py --channel can0 --firmware v120
+python src/scripts/align_teleop_axes.py --port /dev/ttyACM0</code></pre>
+      <p>Calibration records corresponding resting poses and checks joint direction. Relative teleoperation sends displacement from the starting pose, intended to avoid a sudden jump when control begins.</p>
+      <h4>5. Teleoperation</h4>
+      <pre><code>python src/scripts/teleop_direct.py --port /dev/ttyACM0 --channel can0 --dry-run
+python src/scripts/teleop_direct.py --port /dev/ttyACM0 --channel can0 --speed-percent 10</code></pre>
+      <p>The notes describe dry-run as a terminal-only mapping test, and the second command as live control at 10% maximum speed. They mention Space to pause/resume and Esc or <code>q</code> for a software stop. A software stop is not a substitute for the physical Emergency Stop.</p>
+      <h4>Joint mapping example</h4>
+      <pre><code>mapping:
+  joint1: {source: "shoulder_pan", sign: 1.0, offset_rad: 0.0}
+  joint2: {source: "shoulder_lift", sign: 1.0, offset_rad: 0.0}
+  joint3: {source: "fixed", fixed_rad: 0.0}
+  joint4: {source: "elbow_flex", sign: 1.0, offset_rad: 0.0}
+  joint5: {source: "fixed", fixed_rad: 0.0}
+  joint6: {source: "wrist_flex", sign: 1.0, offset_rad: 0.0}
+  joint7: {source: "wrist_roll", sign: 1.0, offset_rad: 0.0}</code></pre>
+      <p>This example maps five SO-101 joints to seven Nero joints, holding two Nero joints at zero according to the supplied notes.</p>
+
+      <h2>3D modelling for ideation</h2>
+      <p>Test blocks of different sizes were printed to find a suitable scale. A base structure was also designed to hold the blocks so the Nero arms could pick them up more easily.</p>
+      <p><strong>Takeaways:</strong> learning to use 3D printers, becoming familiar with CAD software, and learning how to use slicing software.</p>
+
+      <h3>PrusaSlicer: modelling a blueberry</h3>
+      <ol>
+        <li><strong>Create the berry body:</strong> add a sphere and use the Scale tool to slightly squash its Z axis. Unlock the scale axes first to make a natural-looking berry rather than a perfect ball.</li>
+        <li><strong>Carve the crown cavity:</strong> add a negative cylinder or sphere, scale it to about 30% of the berry's width, center it at the top, and push it slightly into the surface.</li>
+        <li><strong>Build the calyx:</strong> add a torus or small cylinders/cones angled outward around the cavity. Overlap the parts with the body so they form one printable mesh.</li>
+        <li><strong>Add organic texture:</strong> in Advanced or Expert print settings, set Fuzzy skin to Outside walls. The notes suggest 0.1 mm thickness and 0.3 mm point distance.</li>
+        <li><strong>Smooth and slice:</strong> use Variable layer height, then Adaptive and Smooth. Enable Organic supports on the build plate, slice, and export G-code.</li>
+      </ol>
+    </article>
+    <nav class="article-pagination" aria-label="More project pages"><a href="day-1.html">← Day 1</a><a href="day-3.html">Day 3 →</a></nav>
   </main>
   <footer class="site-footer"><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
 </body>
