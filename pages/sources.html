@@ -3,9 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="References for the Conveyor Belt robotics project.">
+  <meta name="description" content="Five references for the Conveyor Belt robotics project.">
   <title>Sources — Conveyor Belt</title>
   <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    .source-list { list-style: none; counter-reset: sources; padding: 0 !important; }
+    .source-list li {
+      counter-increment: sources;
+      position: relative;
+      margin: 0 0 .85rem !important;
+      padding: 1.15rem 1.25rem 1.15rem 4rem !important;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--paper);
+    }
+    .source-list li::before {
+      content: "[" counter(sources) "]";
+      position: absolute;
+      top: 1.15rem;
+      left: 1.15rem;
+      color: var(--accent);
+      font-weight: 750;
+    }
+    .source-title { display: block; margin-bottom: .2rem; font-weight: 700; }
+    .source-link { color: var(--accent); overflow-wrap: anywhere; }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -17,29 +39,29 @@
     <header class="page-heading">
       <p class="eyebrow">References</p>
       <h1>Sources</h1>
-      <p class="intro">Manuals, research papers, and background references used throughout the project.</p>
+      <p class="intro">The five references cited in the project notes.</p>
     </header>
     <article class="article-content">
       <ol class="source-list">
         <li id="source-1">
-          <strong>Nero Arm Manual.</strong>
-          <a href="https://manuals.plus/m/e4a1f4677089345f4f41362cab378d66a027223cbb746da1ac1ca1ac08bf0e31_optim.pdf" target="_blank" rel="noopener noreferrer">Open the Nero Arm Manual (PDF)</a>
+          <span class="source-title">Nero Arm Manual</span>
+          <a class="source-link" href="https://manuals.plus/m/e4a1f4677089345f4f41362cab378d66a027223cbb746da1ac1ca1ac08bf0e31_optim.pdf" target="_blank" rel="noopener noreferrer">Open the Nero Arm Manual (PDF)</a>
         </li>
         <li id="source-2">
-          <strong>Environment and Action Chunking with Transformers (ACT).</strong>
-          <a href="https://www.roboticsproceedings.org/rss19/p016.pdf" target="_blank" rel="noopener noreferrer">Read the paper (Robotics: Science and Systems, PDF)</a>
+          <span class="source-title">Environment + ACT</span>
+          <a class="source-link" href="https://www.roboticsproceedings.org/rss19/p016.pdf" target="_blank" rel="noopener noreferrer">Read the paper (Robotics: Science and Systems, PDF)</a>
         </li>
         <li id="source-3">
-          <strong>Optical Character Recognition (OCR).</strong>
-          <a href="http://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank" rel="noopener noreferrer">Read the Wikipedia article</a>
+          <span class="source-title">Optical Character Recognition (OCR)</span>
+          <a class="source-link" href="http://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank" rel="noopener noreferrer">Read the Wikipedia article</a>
         </li>
         <li id="source-4">
-          <strong>Imitation Learning (Master and the Follower).</strong>
-          <a href="https://en.wikipedia.org/wiki/Imitation_learning" target="_blank" rel="noopener noreferrer">Read the Wikipedia article</a>
+          <span class="source-title">Imitation learning (Master and the follower)</span>
+          <a class="source-link" href="https://en.wikipedia.org/wiki/Imitation_learning" target="_blank" rel="noopener noreferrer">Read the Wikipedia article</a>
         </li>
         <li id="source-5">
-          <strong>YOLO Object Detection.</strong>
-          <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf" target="_blank" rel="noopener noreferrer">Read the paper (CVPR 2016, PDF)</a>
+          <span class="source-title">YOLO Object Detection</span>
+          <a class="source-link" href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf" target="_blank" rel="noopener noreferrer">Read the paper (CVPR 2016, PDF)</a>
         </li>
       </ol>
     </article>
