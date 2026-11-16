@@ -5,63 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="RDP-Nov26 Conveyor Belt project home page.">
   <title>Conveyor Belt — RDP-Nov26</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --ink: #252923;
-      --muted: #73786f;
-      --paper: #fff;
-      --background: #f7f7f4;
-      --accent: #47634b;
-      --line: #e5e6e1;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--background);
-      color: var(--ink);
-      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    .container { width: min(720px, calc(100% - 2rem)); margin: 0 auto; }
-    header { padding: clamp(3rem, 9vw, 6rem) 0 2rem; }
-    .eyebrow { margin: 0 0 .75rem; color: var(--accent); font-size: .75rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
-    h1 { margin: 0; font-size: clamp(2.5rem, 9vw, 4.5rem); letter-spacing: -.06em; line-height: 1; }
-    .intro { max-width: 38rem; margin: 1rem 0 0; color: var(--muted); font-size: 1.08rem; }
-    main { padding: 1rem 0 4rem; }
-    h2 { margin: 0 0 .35rem; font-size: 1.15rem; }
-    .subtext { margin: 0 0 1.25rem; color: var(--muted); font-size: .93rem; }
-    .page-list { margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-    .page-list li { border-bottom: 1px solid var(--line); }
-    .page-list a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem .15rem; color: var(--ink); text-decoration: none; }
-    .page-list a:hover { color: var(--accent); }
-    .page-list a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-    .title { font-weight: 650; }
-    .description { margin-left: auto; color: var(--muted); font-size: .9rem; }
-    .arrow { color: var(--accent); }
-    footer { padding: 1rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
-    @media (max-width: 520px) { .page-list a { flex-wrap: wrap; } .description { width: 100%; margin-left: 0; } }
-  </style>
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-  <header class="container">
-    <p class="eyebrow">RDP · November 2026</p>
-    <h1>Conveyor Belt</h1>
-    <p class="intro">Welcome to the project. Choose a page below to explore the daily work and references.</p>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">CB</span> RDP / Conveyor Belt</a>
+    <span class="header-note">Research project · November 2026</span>
   </header>
-  <main class="container">
-    <section aria-labelledby="pages-heading">
-      <h2 id="pages-heading">Project pages</h2>
-      <p class="subtext">Open a page:</p>
-      <nav aria-label="Project pages">
-        <ul class="page-list">
-          <li><a href="DRAFT/Day%201.html"><span class="title">Day 1</span><span class="description">Daily project log</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-          <li><a href="DRAFT/Day%202.html"><span class="title">Day 2</span><span class="description">Daily project log</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-          <li><a href="DRAFT/Day%203.html"><span class="title">Day 3</span><span class="description">Daily project log</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-          <li><a href="DRAFT/Sources_.html"><span class="title">Sources</span><span class="description">References and materials</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-        </ul>
+  <main class="container home-main">
+    <p class="eyebrow">Project home</p>
+    <h1>Conveyor Belt</h1>
+    <p class="intro">Welcome to the project. Choose a day or view the reference materials.</p>
+    <section aria-labelledby="pages-title">
+      <h2 id="pages-title">Project pages</h2>
+      <nav aria-label="Project pages" class="page-list">
+        <a class="page-row" href="pages/day-1.html"><span><strong>Day 1</strong><small>Daily project log</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="page-row" href="pages/day-2.html"><span><strong>Day 2</strong><small>Daily project log</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="page-row" href="pages/day-3.html"><span><strong>Day 3</strong><small>Daily project log</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+        <a class="page-row" href="pages/sources.html"><span><strong>Sources</strong><small>References and materials</small></span><span class="arrow" aria-hidden="true">↗</span></a>
+        <!-- Add a page: create pages/your-page.html and copy a page-row link, changing its URL, title, and description. -->
       </nav>
     </section>
   </main>
-  <footer><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
+  <footer class="site-footer"><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
 </body>
 </html>
