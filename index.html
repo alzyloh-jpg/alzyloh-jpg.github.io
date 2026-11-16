@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Conveyor Belt project — home, daily pages, and sources.">
+  <title>Conveyor Belt | RDP-Nov26</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --muted: #596777;
+      --paper: #fff;
+      --canvas: #f2f6f7;
+      --accent: #087e8b;
+      --accent-dark: #05616a;
+      --line: #dce5e8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      padding: 4.5rem 1.25rem 3.5rem;
+      background: linear-gradient(135deg, #12343b, #087e8b);
+      color: white;
+    }
+    .wrap { width: min(100% - 2rem, 960px); margin-inline: auto; }
+    .eyebrow { margin: 0 0 .75rem; color: #bce7e9; font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.08; }
+    header p:last-child { max-width: 42rem; margin: 1rem 0 0; color: #e4f4f4; font-size: 1.1rem; }
+    main { padding-block: 2.5rem 4rem; }
+    h2 { margin: 0 0 1rem; font-size: 1.5rem; }
+    .intro { margin: 0 0 1.5rem; color: var(--muted); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .card {
+      display: block;
+      min-height: 150px;
+      padding: 1.25rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      color: inherit;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgb(23 33 43 / 5%);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .card:hover, .card:focus-visible { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 24px rgb(23 33 43 / 10%); }
+    .card:focus-visible { outline: 3px solid #70d1d6; outline-offset: 3px; }
+    .number { display: block; margin-bottom: .35rem; color: var(--accent); font-size: .78rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .card strong { display: block; margin-bottom: .35rem; font-size: 1.2rem; }
+    .card span:last-child { color: var(--muted); }
+    footer { padding: 1.5rem 1rem; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">RDP · November 2026</p>
+      <h1>Conveyor Belt</h1>
+      <p>Welcome. Choose a page below to open the project introduction, daily entries, or sources.</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <h2>Explore the project</h2>
+    <p class="intro">Select a card to go directly to that page.</p>
+    <nav class="cards" aria-label="Project pages">
+      <a class="card" href="DRAFT/Home.html">
+        <span class="number">Start here</span>
+        <strong>Home</strong>
+        <span>Project overview and introduction</span>
+      </a>
+      <a class="card" href="DRAFT/Day%201.html">
+        <span class="number">Entry 01</span>
+        <strong>Day 1</strong>
+        <span>Open the first day's project page</span>
+      </a>
+      <a class="card" href="DRAFT/Day%202.html">
+        <span class="number">Entry 02</span>
+        <strong>Day 2</strong>
+        <span>Open the second day's project page</span>
+      </a>
+      <a class="card" href="DRAFT/Day%203.html">
+        <span class="number">Entry 03</span>
+        <strong>Day 3</strong>
+        <span>Open the third day's project page</span>
+      </a>
+      <a class="card" href="DRAFT/Sources_.html">
+        <span class="number">References</span>
+        <strong>Sources</strong>
+        <span>View the project's source material</span>
+      </a>
+    </nav>
+  </main>
+  <footer><div class="wrap">RDP-Nov26 · Conveyor Belt</div></footer>
+</body>
+</html>
