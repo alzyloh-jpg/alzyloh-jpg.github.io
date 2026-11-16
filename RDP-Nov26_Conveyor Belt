@@ -1,1 +1,46 @@
-here
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RDP-Nov26 Conveyor Belt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      line-height: 1.6;
+      color: #1f1f1f;
+      background: #f7f7f7;
+    }
+    h1, h2 {
+      color: #111;
+    }
+    ul {
+      padding-left: 1.5rem;
+    }
+    a {
+      color: #0b57d0;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>RDP-Nov26 Conveyor Belt</h1>
+
+  <p>Content consolidated from the draft files related to this project.</p>
+
+  <h2>Sections</h2>
+  <ul>
+    <li><a href="DRAFT/Home.html">Home</a></li>
+    <li><a href="DRAFT/Day 1.html">Day 1</a></li>
+    <li><a href="DRAFT/Day 2.html">Day 2</a></li>
+    <li><a href="DRAFT/Day 3.html">Day 3</a></li>
+    <li><a href="DRAFT/Sources_.html">Sources</a></li>
+  </ul>
+
+  <p>This page replaces the placeholder text and serves as the main landing file for the conveyor-belt project materials.</p>
+</body>
+</html>
