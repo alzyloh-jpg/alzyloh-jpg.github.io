@@ -59,6 +59,7 @@ h4 { margin: 1.4rem 0 .45rem; font-size: 1rem; }
 .article-content code { padding: .12em .3em; border-radius: 4px; background: var(--soft); font-size: .9em; }
 .article-content pre { overflow-x: auto; margin: 1rem 0; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 8px; background: #f0f1ed; line-height: 1.5; }
 .article-content pre code { padding: 0; background: transparent; font-size: .85rem; }
+.article-content .equation { overflow-x: auto; padding: .8rem 1rem; border-left: 3px solid var(--accent); background: var(--soft); }
 .citation { color: var(--accent); font-size: .78em; text-decoration: none; vertical-align: super; }
 .notice { margin: 1.2rem 0; padding: .9rem 1rem; border-left: 3px solid var(--accent); background: var(--soft); color: #4f584e; }
 .article-pagination { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }

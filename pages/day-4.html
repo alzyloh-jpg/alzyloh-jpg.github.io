@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Day 4 notes on imitation learning, fruit detection, a Tic Tac Toe vision system, and GitHub Pages.">
+  <title>Day 4 — Conveyor Belt</title>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">CB</span> RDP / Conveyor Belt</a>
+    <span class="header-note">Research project · November 2026</span>
+  </header>
+  <main class="container page-main">
+    <a class="back-link" href="../index.html">← Project home</a>
+    <header class="page-heading"><p class="eyebrow">Daily log · 04</p><h1>Day 4</h1><p class="intro">Imitation learning for the Nero arms, fruit detection, a Tic Tac Toe vision-system plan, and reflections on publishing the project website.</p></header>
+
+    <article class="article-content">
+      <h2>Creating fruit detection with Grok CLI</h2>
+      <p>With the assistance of Grok CLI, we created a Python program that runs in Visual Studio Code and identifies blueberries and strawberries. The reported accuracy is about 90%; this is the project's reported result and may vary with the images and test conditions.</p>
+      <p>The images contain different objects at varied positions and distances. The program can be run by supplying an image path. An example result from the notes is:</p>
+      <pre><code>IMG_4615.HEIC: both
+purple fruit 0.92 at [8, 12, 1327, 1186]
+strawberry 0.86 at [1336, 1971, 2749, 3173]
+Results saved to /Users/alfredloh/Desktop/fruit-detector/runs/predict
+Photos checked: 1
+  strawberry: 1 box(es) in 1 photo(s)
+  purple fruit: 1 box(es) in 1 photo(s)
+  neither: 0 photo(s)</code></pre>
+
+      <h2>Imitation learning: how the Nero arms learn</h2>
+      <p>In this project, an expert means the person demonstrating the task. The human demonstrates placing Tic Tac Toe pieces using VR controllers or a master arm. The robot records camera images and joint positions as observations (state, <em>s</em>) together with the operator's movements (action, <em>a</em>). These pairs form a demonstration dataset.</p>
+
+      <h3>1. Demonstration data</h3>
+      <p>The dataset can be written as:</p>
+      <p class="equation"><code>D = {(s₁, a₁), (s₂, a₂), …, (s<sub>N</sub>, a<sub>N</sub>)}</code></p>
+      <ul>
+        <li><strong>s</strong> is the state or observation.</li>
+        <li><strong>a</strong> is the action taken by the expert.</li>
+        <li><strong>D</strong> is the dataset of demonstrations.</li>
+      </ul>
+
+      <h3>2. Behaviour cloning</h3>
+      <p>Behaviour cloning learns policy parameters θ that make the policy output close to the expert's action across the demonstration examples:</p>
+      <p class="equation"><code>min<sub>θ</sub> E<sub>(s,a) ∈ D</sub>[ℓ(π<sub>θ</sub>(s), a)]</code></p>
+      <p>Here, π<sub>θ</sub>(s) is a policy—often a neural network—that takes a state and outputs an action. The loss ℓ measures the difference; for continuous actions it is commonly squared error (L2) or absolute error (L1). A probabilistic formulation maximizes the sum of log π<sub>θ</sub>(a | s), making the demonstrated action likely under the policy.</p>
+
+      <h3>3. DAgger (Dataset Aggregation)</h3>
+      <ol>
+        <li>Run the current policy π<sub>i</sub> and collect states from the situations it actually encounters.</li>
+        <li>Ask the expert for the correct action a* = π<sub>expert</sub>(s) for those states.</li>
+        <li>Add those state-action pairs to the dataset: D ← D ∪ {(s, a*)}.</li>
+        <li>Retrain on the combined dataset to obtain π<sub>i+1</sub>.</li>
+      </ol>
+      <p>Because training includes states visited by the learner, along with expert corrections, this approach addresses the mismatch between demonstration states and the states the learned policy may encounter. The supplied notes describe error growth as roughly ε · T.</p>
+
+      <h3>4. GAIL</h3>
+      <p>Generative Adversarial Imitation Learning (GAIL) trains a policy against a discriminator D that tries to distinguish policy behaviour from expert behaviour:</p>
+      <p class="equation"><code>min<sub>π</sub> max<sub>D</sub> E<sub>π</sub>[log D(s, a)] + E<sub>expert</sub>[log(1 − D(s, a))]</code></p>
+      <p>The discriminator learns to spot policy-generated behaviour, while the policy learns to make its behaviour resemble the expert's.</p>
+
+      <h3>Connection to this project</h3>
+      <p>We aim to teach a Nero arm to place Tic Tac Toe pieces by imitation learning. Human demonstrations, recorded camera observations, joint positions, and operator actions form the dataset used to train an ACT model, a form of behaviour cloning. Imitation learning can be affected when a policy drifts into states not represented in its demonstrations. ACT addresses part of this challenge by predicting a chunk of future actions at once.</p>
+
+      <h2>YOLO Tic Tac Toe vision system: project overview</h2>
+      <h3>What we are building</h3>
+      <p>The planned system uses an overhead webcam and a custom YOLO11n model to observe a real 3 × 3 Tic Tac Toe board. It detects two piece classes, called <code>object_A</code> and <code>object_B</code>, maps each piece to a square, reduces visual flicker, and displays a live camera view beside a digital board.</p>
+
+      <h3>Design goals</h3>
+      <ul>
+        <li><strong>Runs on Windows 11 and Linux:</strong> use the same project code on both platforms.</li>
+        <li><strong>Modular:</strong> keep camera, detection, grid mapping, and display tasks in separate files so they can be tested independently.</li>
+        <li><strong>Configurable:</strong> keep camera indices, board corners, and detection thresholds in YAML configuration files.</li>
+        <li><strong>Real training data:</strong> use photographs captured with the webcam rather than synthetic images.</li>
+      </ul>
+
+      <h3>System setup and hardware</h3>
+      <ul>
+        <li><strong>Computer and OS:</strong> Windows 11 with Python 3.11 in the described setup.</li>
+        <li><strong>GPU:</strong> NVIDIA RTX 5060 with 8 GB VRAM and CUDA enabled.</li>
+        <li><strong>Software:</strong> PyTorch, Ultralytics YOLO, and OpenCV in a virtual environment.</li>
+        <li><strong>Camera:</strong> standard USB or overhead webcam, with automatic reconnect as a goal.</li>
+      </ul>
+
+      <h3>Planned folder structure</h3>
+      <ul>
+        <li><code>config/</code> — settings such as <code>config.yaml</code> and <code>data.yaml</code>.</li>
+        <li><code>dataset/</code> and <code>models/</code> — real training photos, labels, and trained weights such as <code>best.pt</code>.</li>
+        <li><code>src/camera.py</code> and <code>src/preprocessing.py</code> — video capture and straightening angled camera views.</li>
+        <li><code>src/detector.py</code> — detect game pieces and calculate their centers.</li>
+        <li><code>src/board_detector.py</code> and <code>src/coordinate_mapper.py</code> — calibrate four board corners and map piece positions to the nine squares.</li>
+        <li><code>src/board_state.py</code> — reduce flicker and maintain the digital board state.</li>
+        <li><code>src/capture_dataset.py</code> and <code>src/train.py</code> — collect training photos and train the model.</li>
+        <li><code>src/main.py</code> — run the complete application and open the two display windows.</li>
+        <li><code>tests/</code> — automated checks for coordinate mapping and anti-flicker logic.</li>
+      </ul>
+
+      <h3>Four-stage build plan</h3>
+      <ol>
+        <li><strong>Setup (Phases 1–3):</strong> check the GPU, create the project folders, and install packages.</li>
+        <li><strong>Train the AI (Phases 4–6):</strong> build camera capture, gather images across lighting conditions, label them, and train YOLO11n.</li>
+        <li><strong>Build the application (Phases 7–9):</strong> connect detection, add four-corner board calibration, map detections to squares, and implement anti-flicker logic.</li>
+        <li><strong>Launch and test (Phase 10):</strong> combine the live camera view and digital board, add <code>q</code> to quit and <code>c</code> to recalibrate, and run automated tests.</li>
+      </ol>
+
+      <h3>Handling real-world issues</h3>
+      <ul>
+        <li><strong>Hands blocking a piece:</strong> wait for a stable detection across several frames (for example, 8 of 10) before updating the board.</li>
+        <li><strong>Pieces near grid lines:</strong> use buffer zones to prevent a piece from rapidly switching between squares.</li>
+        <li><strong>Duplicate detections:</strong> if more than one box appears in a square, keep the highest-confidence detection.</li>
+        <li><strong>Pieces outside the board:</strong> ignore detections outside the calibrated corners.</li>
+        <li><strong>Camera or model issues:</strong> attempt camera reconnection and handle unavailable model or GPU resources without crashing.</li>
+      </ul>
+
+      <h3>Quality checks</h3>
+      <ul>
+        <li><strong>Mapping:</strong> test that pieces map to the correct squares and out-of-board pieces are ignored.</li>
+        <li><strong>Stability:</strong> test that adding, moving, and removing pieces updates the digital board without flicker.</li>
+        <li><strong>Live run:</strong> check video smoothness, corner calibration, and responsive display windows.</li>
+      </ul>
+
+      <h2>GitHub Pages: overview, advantages, and challenges</h2>
+      <h3>What is GitHub Pages?</h3>
+      <p>GitHub Pages is a static website-hosting service that publishes websites from a GitHub repository. It can host websites made with HTML, CSS, and JavaScript, including portfolios, blogs, and project sites.</p>
+
+      <h3>Why we switched from Google Sites</h3>
+      <ul>
+        <li><strong>More design control:</strong> writing the site directly provides more flexibility than fixed templates.</li>
+        <li><strong>Version control:</strong> GitHub tracks changes, making edits reviewable and previous versions recoverable.</li>
+        <li><strong>Skill development:</strong> building and maintaining the site gives practical experience with web development.</li>
+      </ul>
+
+      <h3>Challenges during implementation</h3>
+      <ul>
+        <li><strong>Code and file management:</strong> GitHub Pages requires managing project files and working with web technologies, unlike a drag-and-drop editor.</li>
+        <li><strong>Setup and deployment:</strong> configuring the repository and understanding how publishing works took time.</li>
+        <li><strong>Troubleshooting:</strong> deployment and code errors were not always immediately clear.</li>
+      </ul>
+
+      <h2>Data collection problem and takeaway</h2>
+      <p>During VR headset and Nero arm data collection, the program was not adjusted to accommodate 40 recordings and stopped after 20. This left the dataset incomplete and meant the team had to investigate the error and consider repeating recordings.</p>
+      <p><strong>Takeaway:</strong> review program settings—especially recording limits—before running a collection. Test the program with a small preliminary run to confirm it behaves as intended, reducing avoidable delays and improving the completeness of the dataset.</p>
+    </article>
+    <nav class="article-pagination" aria-label="More project pages"><a href="day-3.html">← Day 3</a><a href="sources.html">Sources →</a></nav>
+  </main>
+  <footer class="site-footer"><div class="container">RDP-Nov26 · Conveyor Belt</div></footer>
+</body>
+</html>
